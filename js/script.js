@@ -5,7 +5,7 @@
 //     console.log('links:', links);
 //   });
 {
-    const optArticleSelector = '.post',
+    const optArticleSelector = '.post', 
           optTitleSelector = '.post-title',
           optTitleListSelector = '.titles';
 
@@ -36,14 +36,15 @@
             console.log(html);
         }
         titleList.innerHTML = html;
-
+        // https://stackoverflow.com/questions/74992026/function-doesnt-want-to-execute-js **
         const links = document.querySelectorAll('.titles a');
         for (let link of links) { // wywołanie naszej funkcji bez tego nie działa
             link.addEventListener('click', titleClickHandler);
         }
     }
 
-    function titleClickHandler(event) { // jak jest dodany parametr do tej funkcji "event" w console.log już nie pokazjue że jest "'event' is deprecated." czy to jest coś poważnego?
+    function titleClickHandler(event) { // ** sprawdź link co jest wyżej ** jak jest dodany parametr do tej funkcji "event" w console.log już nie pokazjue że jest "'event' is deprecated." czy to jest coś poważnego?
+        
         console.log('Link was clicked!');
         console.log(event);
 
