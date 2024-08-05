@@ -4,45 +4,80 @@
 //     const links = document.querySelectorAll('.titles a');
 //     console.log('links:', links);
 //   });
+{
+    const optArticleSelector = '.post',
+          optTitleSelector = '.post-title',
+          optTitleListSelector = '.titles';
 
-const titleClickHandler = function () {
-    console.log('Link was cliked!');
-    console.log(event)
+    function generateTitleLinks() {
+        /* remove contents of titleList */
+        const titleList = document.querySelector(optTitleListSelector);
+        titleList.innerHTML = '';
 
-    /* [DONE] remove class 'active' from all article links  */
-    const activeLinks = document.querySelectorAll('.titles a.active');
+        /* for each article */
+        const articles = document.querySelectorAll(optArticleSelector);
+        let html = '';
+        for (let article of articles) {
 
-    for  (let activeLink of activeLinks) {
-        activeLink.classList.remove('active');
+            /* get the article id */
+            const articleId = article.getAttribute('id');
+
+            /* find the title element */
+            const articleTitle = article.querySelector(optTitleSelector).innerHTML;
+
+            /* get the title from the title element */
+            // czy tutaj coś mam pominięte? dwa razy przelecałem przez modół
+
+            /* create HTML of the link */
+            const linkHTML = '<li><a href="#' + articleId + '"><span>' + articleTitle + '</span></a></li>';
+
+            /* insert link into titleList */
+            html = html + linkHTML;
+            console.log(html);
+        }
+        titleList.innerHTML = html;
+
+        const links = document.querySelectorAll('.titles a');
+        for (let link of links) { // wywołanie naszej funkcji bez tego nie działa
+            link.addEventListener('click', titleClickHandler);
+        }
     }
 
-    /* [DONE] add class 'active' to the clicked link */
-    event.preventDefault();
-    const clickedElement = this; //nie dokońca romuzmiem działanie this
-    console.log('clickedElement:', clickedElement);
-    clickedElement.classList.add('active');
+    function titleClickHandler(event) { // jak jest dodany parametr do tej funkcji "event" w console.log już nie pokazjue że jest "'event' is deprecated." czy to jest coś poważnego?
+        console.log('Link was clicked!');
+        console.log(event);
 
-    /* [DONE] remove class 'active' from all articles */
-    const activeArticles = document.querySelectorAll('.posts .post.active');
+        /* [DONE] remove class 'active' from all article links  */
+        const activeLinks = document.querySelectorAll('.titles a.active');
 
-    for  (let activeArticle of activeArticles) {
-        activeArticle.classList.remove('active');
+        for (let activeLink of activeLinks) {
+            activeLink.classList.remove('active');
+        }
+
+        /* [DONE] add class 'active' to the clicked link */
+        event.preventDefault();
+        const clickedElement = this; //nie dokońca romuzmiem działanie this
+        console.log('clickedElement:', clickedElement);
+        clickedElement.classList.add('active');
+
+        /* [DONE] remove class 'active' from all articles */
+        const activeArticles = document.querySelectorAll('.posts .post.active');
+
+        for (let activeArticle of activeArticles) {
+            activeArticle.classList.remove('active');
+        }
+
+        /* [DONE] get 'href' attribute from the clicked link */
+        const articleSelector = clickedElement.getAttribute('href');
+        console.log(articleSelector);
+
+        /* [DONE] find the correct article using the selector (value of 'href' attribute) */
+        const targetArticle = document.querySelector(articleSelector);
+        targetArticle.classList.add('active');
+
+        /* [DONE] add class 'active' to the correct article */
+        targetArticle.classList.add('active');
     }
 
-    /* [DONE] get 'href' attribute from the clicked link */
-    const articleSelector = clickedElement.getAttribute('href');
-    console.log(articleSelector);
-
-    /* [DONE] find the correct article using the selector (value of 'href' attribute) */
-    const targetArticle = document.querySelector(articleSelector);
-    targetArticle.classList.add('active');
-
-    /* [DONE] add class 'active' to the correct article */
-    targetArticle.classList.add('active');
-} //ból i cierpienie
-
-const links = document.querySelectorAll('.titles a');
-
-for (let link of links) {
-    link.addEventListener('click', titleClickHandler);
+    generateTitleLinks();
 }
