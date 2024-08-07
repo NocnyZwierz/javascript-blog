@@ -4,10 +4,15 @@
   const templates = {
     // eslint-disable-next-line no-undef
     articleLink: Handlebars.compile(document.querySelector('#template-article-link').innerHTML),
-
+    // eslint-disable-next-line no-undef
+    tagLink: Handlebars.compile(document.querySelector('#template-tag-link').innerHTML),
+    // eslint-disable-next-line no-undef
+    authorLink: Handlebars.compile(document.querySelector('#template-author-link').innerHTML),
 
     // eslint-disable-next-line no-undef
     tagCloudLink: Handlebars.compile(document.querySelector('#template-tag-cloud-link').innerHTML),
+    // eslint-disable-next-line no-undef
+    authorListLink: Handlebars.compile(document.querySelector('#template-author-list-link').innerHTML)
   };
 
   const optArticleSelector = '.post',
@@ -164,7 +169,8 @@
       /* START LOOP: for each tag */
       for (let tag of articleTagsArray) {
         /* generate HTML of the link */
-        const linkHTML = '<li><a href="#tag-' + tag + '">' + tag + '</a></li>';
+        const linkHTMLData = {tag: tag};
+        const linkHTML = templates.tagLink(linkHTMLData);
 
         /* add generated code to html variable */
         html += linkHTML;
@@ -272,7 +278,8 @@
       //łapiemy ich atrubuty
       const articleAuthor = article.getAttribute('data-author');
       //linkujemy
-      const linkHTML = '<a href="#author-' + articleAuthor.replace(' ', '-') + '">' + articleAuthor + '</a>';
+      const linkHTMLData = {author: articleAuthor};
+      const linkHTML = templates.authorLink(linkHTMLData);
       //link
       authorWrapper.innerHTML = linkHTML;
 
@@ -285,13 +292,16 @@
 
     const authorList = document.querySelector(optAuthorsListSelector); //Pobranie listy autorów w prawej kolumnie
     const authorsParams = calculateAuthorsParams(allAuthors); // Obliczenie parametrów dla autorów
-    let allAuthorsHTML = '';
+    const allAuthorsData = {authors: []};
     for (let author in allAuthors) { // Generowanie HTML dla każdego autora podobnie jak dla tagów z prawej
-      const authorLinkHTML = '<li><a href="#author-' + author.replace(' ', '-') + '" class="' + calculateTagClass(allAuthors[author], authorsParams) + '">' + author + ' (' + allAuthors[author] + ')</a></li>';
-      allAuthorsHTML += authorLinkHTML; // Dodanie HTML do zmiennej allAuthorsHTML
+      allAuthorsData.authors.push({
+        author: author,
+        count: allAuthors[author],
+        className: calculateTagClass(allAuthors[author], authorsParams)
+      });
     }
 
-    authorList.innerHTML = allAuthorsHTML; //nadpisujemy HTML za pomocą inner, UWAGA moze na rzrabiać
+    authorList.innerHTML = templates.authorListLink(allAuthorsData); //nadpisujemy HTML za pomocą inner, UWAGA moze na rzrabiać
   }
   generateAuthors();
 
