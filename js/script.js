@@ -7,8 +7,9 @@
     optArticleTagsSelector = '.list-horizontal', //to był cały winowajca który nie pokazywał <p>tags: !!!!!!!!!!!
     optArticleAuthorSelector = '.post-author',
     optTagsListSelector = '.tags.list',
-    optCloudClassCount = 5,
-    optCloudClassPrefix = 'tag-size-';
+    optCloudClassCount = 10,
+    optCloudClassPrefix = 'tag-size-',
+    optAuthorsListSelector = '.authors.list';
 
   function generateTitleLinks(customSelector = '') {
     /* remove contents of titleList */
@@ -84,28 +85,49 @@
   generateTitleLinks();
 
   function calculateTagsParams(tags) {
+    //tworzymy obiekt z wartosciami początkowymi
     const params = {
       max: 0,
       min: 999999
     };
-
+    //lecimy przez wszystkie tagi w obiekcie tags
     for (let tag in tags) {
+      // Jeśli liczba wystąpień tagu jest większa niż obecna wartość params.max, zaktualizuje params.max
       if (tags[tag] > params.max) {
         params.max = tags[tag];
       }
+      // Jeśli liczba wystąpień tagu jest mniejsza niż obecna wartość params.min, zaktualizuje params.min
       if (tags[tag] < params.min) {
         params.min = tags[tag];
       }
     }
-
+    //zwracamy winik
     return params;
   }
+  // to samo co wyżej ale dla autorów zmieniły sie tylko nazwy
+  function calculateAuthorsParams(authors) {
+    const params = {
+      max: 0,
+      min: 999999
+    };
+    for (let author in authors) {
+      if (authors[author] > params.max) {
+        params.max = authors[author];
+      }
+      if (authors[author] < params.min) {
+        params.min = authors[author];
+      }
+    }
+    return params;
+  }
+  //Funkcja obliczająca odpowiednią klasę CSS
   function calculateTagClass(count, params) {
+    //moduł 6.3 dokładny opis co do czego
     const normalizedCount = count - params.min;
     const normalizedMax = params.max - params.min;
     const percentage = normalizedCount / normalizedMax;
     const classNumber = Math.floor(percentage * (optCloudClassCount - 1) + 1);
-
+    //Zwrócenie nazwy klasy sass na podstawie obliczonego numeru klasy
     return optCloudClassPrefix + classNumber;
   }
 
@@ -162,12 +184,12 @@
     /* [NEW] START LOOP: for each tag in allTags: */
     for(let tag in allTags){
       /* [NEW] generate code of a link and add it to allTagsHTML */
-      const tagLinkHTML = '<li><a href="#tag-' + tag + '" class="' + calculateTagClass(allTags[tag], tagsParams) + '">' + tag + ' (' + allTags[tag] + ')</a></li>';
+      const tagLinkHTML = '<li><a href="#tag-' + tag + '" class="' + calculateTagClass(allTags[tag], tagsParams) + '">' + tag + '</a></li>';
       console.log('tagLinkHTML:', tagLinkHTML);
       allTagsHTML += tagLinkHTML;
-    }
-    /* [NEW] END LOOP: for each tag in allTags: */
 
+    /* [NEW] END LOOP: for each tag in allTags: */
+    }
     /*[NEW] add HTML from allTagsHTML to tagList */
     tagList.innerHTML = allTagsHTML;
   }
@@ -224,9 +246,9 @@
   }
 
   addClickListenersToTags();
-  //not o jazda
 
   function generateAuthors (){
+    let allAuthors = {};
     //zaciagamy całą listę
     const articles = document.querySelectorAll(optArticleSelector);
     //jedziemy po autorach
@@ -239,7 +261,23 @@
       const linkHTML = '<a href="#author-' + articleAuthor.replace(' ', '-') + '">' + articleAuthor + '</a>';
       //link
       authorWrapper.innerHTML = linkHTML;
+
+      if (!allAuthors[articleAuthor]) { //  Sprawdzanie, czy autor jest już w allAuthors
+        allAuthors[articleAuthor] = 1; //  Jeśli nie, dodanie go z liczbą 1
+      } else {
+        allAuthors[articleAuthor]++; // [ Jeśli tak, zwiększenie liczby jego artykułów
+      }
     }
+
+    const authorList = document.querySelector(optAuthorsListSelector); //Pobranie listy autorów w prawej kolumnie
+    const authorsParams = calculateAuthorsParams(allAuthors); // Obliczenie parametrów dla autorów
+    let allAuthorsHTML = '';
+    for (let author in allAuthors) { // Generowanie HTML dla każdego autora podobnie jak dla tagów z prawej
+      const authorLinkHTML = '<li><a href="#author-' + author.replace(' ', '-') + '" class="' + calculateTagClass(allAuthors[author], authorsParams) + '">' + author + ' (' + allAuthors[author] + ')</a></li>';
+      allAuthorsHTML += authorLinkHTML; // Dodanie HTML do zmiennej allAuthorsHTML
+    }
+
+    authorList.innerHTML = allAuthorsHTML; //nadpisujemy HTML za pomocą inner, UWAGA moze na rzrabiać
   }
   generateAuthors();
 
